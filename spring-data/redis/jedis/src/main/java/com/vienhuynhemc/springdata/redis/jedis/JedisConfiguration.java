@@ -9,6 +9,7 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializer;
 
 @Configuration
 public class JedisConfiguration {
@@ -16,10 +17,10 @@ public class JedisConfiguration {
   @Bean
   public @Nonnull RedisConnectionFactory jedisConnectionFactory() {
     final RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-    config.setHostName("redis-19497.c325.us-east-1-4.ec2.redns.redis-cloud.com");
-    config.setPort(19497);
+    config.setHostName("redis-13844.c292.ap-southeast-1-1.ec2.redns.redis-cloud.com");
+    config.setPort(13844);
     config.setUsername("default");
-    config.setPassword("MslH6Q3QHDyuBT3hWCL5wFkZSrg4o1hl");
+    config.setPassword("6vPcMcT8FxK06QizUZhI66Rd9W1xXCbW");
 
     return new JedisConnectionFactory(config);
   }
@@ -30,6 +31,7 @@ public class JedisConfiguration {
   ) {
     final RedisTemplate<String, String> template = new RedisTemplate<>();
     template.setConnectionFactory(jedisConnectionFactory);
+    template.setDefaultSerializer(RedisSerializer.string());
 
     return template;
   }
