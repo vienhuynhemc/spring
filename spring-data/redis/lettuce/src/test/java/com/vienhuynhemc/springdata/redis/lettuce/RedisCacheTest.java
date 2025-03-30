@@ -1,22 +1,21 @@
 /* vienhuynhemc */
 package com.vienhuynhemc.springdata.redis.lettuce;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.vienhuynhemc.springdata.redis.lettuce.book.Book;
 import com.vienhuynhemc.springdata.redis.lettuce.book.BookController;
 import com.vienhuynhemc.springdata.redis.lettuce.book.BookService;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.Cache;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class RedisCacheTest {

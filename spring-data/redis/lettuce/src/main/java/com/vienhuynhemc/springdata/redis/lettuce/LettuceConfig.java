@@ -78,20 +78,20 @@ public class LettuceConfig {
   public @Nonnull RedisCacheManager cacheManager(@Nonnull RedisConnectionFactory lettuceConnectionFactory) {
     final BatchStrategy batchStrategies = BatchStrategies.scan(5);
     final RedisCacheWriter redisCacheWriter = RedisCacheWriter.lockingRedisCacheWriter(
-            lettuceConnectionFactory,
-            batchStrategies
+      lettuceConnectionFactory,
+      batchStrategies
     );
 
     final RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-            .computePrefixWith(cacheName -> "springdata.redis.lettuce." + cacheName + ".")
-            .entryTtl(new CacheTimeToLiveFunction())
-            .enableTimeToIdle()
-            .disableCachingNullValues();
+      .computePrefixWith(cacheName -> "springdata.redis.lettuce." + cacheName + ".")
+      .entryTtl(new CacheTimeToLiveFunction())
+      .enableTimeToIdle()
+      .disableCachingNullValues();
 
     return RedisCacheManager.builder(redisCacheWriter)
-            .cacheDefaults(config)
-            .transactionAware()
-            .enableStatistics()
-            .build();
+      .cacheDefaults(config)
+      .transactionAware()
+      .enableStatistics()
+      .build();
   }
 }

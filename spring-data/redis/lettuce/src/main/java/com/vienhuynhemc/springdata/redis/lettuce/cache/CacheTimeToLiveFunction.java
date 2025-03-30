@@ -3,9 +3,8 @@ package com.vienhuynhemc.springdata.redis.lettuce.cache;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import org.springframework.data.redis.cache.RedisCacheWriter.TtlFunction;
-
 import java.time.Duration;
+import org.springframework.data.redis.cache.RedisCacheWriter.TtlFunction;
 
 public class CacheTimeToLiveFunction implements TtlFunction {
 
