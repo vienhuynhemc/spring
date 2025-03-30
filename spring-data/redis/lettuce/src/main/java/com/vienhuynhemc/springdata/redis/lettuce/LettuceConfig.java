@@ -1,10 +1,16 @@
 /* vienhuynhemc */
 package com.vienhuynhemc.springdata.redis.lettuce;
 
+import com.vienhuynhemc.springdata.redis.lettuce.cache.CacheTimeToLiveFunction;
 import jakarta.annotation.Nonnull;
 import java.time.Duration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.BatchStrategies;
+import org.springframework.data.redis.cache.BatchStrategy;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
@@ -18,7 +24,7 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
 @Configuration
-public class LettuceConfiguration {
+public class LettuceConfig {
 
   @Bean
   public @Nonnull RedisConnectionFactory lettuceConnectionFactory() {
@@ -66,5 +72,26 @@ public class LettuceConfiguration {
     @Nonnull ReactiveRedisConnectionFactory lettuceConnectionFactory
   ) {
     return new ReactiveStringRedisTemplate(lettuceConnectionFactory);
+  }
+
+  @Bean
+  public @Nonnull RedisCacheManager cacheManager(@Nonnull RedisConnectionFactory lettuceConnectionFactory) {
+    final BatchStrategy batchStrategies = BatchStrategies.scan(5);
+    final RedisCacheWriter redisCacheWriter = RedisCacheWriter.lockingRedisCacheWriter(
+            lettuceConnectionFactory,
+            batchStrategies
+    );
+
+    final RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+            .computePrefixWith(cacheName -> "springdata.redis.lettuce." + cacheName + ".")
+            .entryTtl(new CacheTimeToLiveFunction())
+            .enableTimeToIdle()
+            .disableCachingNullValues();
+
+    return RedisCacheManager.builder(redisCacheWriter)
+            .cacheDefaults(config)
+            .transactionAware()
+            .enableStatistics()
+            .build();
   }
 }
