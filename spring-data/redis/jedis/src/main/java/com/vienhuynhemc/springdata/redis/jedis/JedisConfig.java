@@ -1,9 +1,15 @@
 /* vienhuynhemc */
 package com.vienhuynhemc.springdata.redis.jedis;
 
+import com.vienhuynhemc.springdata.redis.jedis.cache.CacheTimeToLiveFunction;
 import jakarta.annotation.Nonnull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.BatchStrategies;
+import org.springframework.data.redis.cache.BatchStrategy;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -12,7 +18,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
 @Configuration
-public class JedisConfiguration {
+public class JedisConfig {
 
   @Bean
   public @Nonnull RedisConnectionFactory jedisConnectionFactory() {
@@ -42,5 +48,26 @@ public class JedisConfiguration {
     template.setConnectionFactory(jedisConnectionFactory);
 
     return template;
+  }
+
+  @Bean
+  public @Nonnull RedisCacheManager cacheManager(@Nonnull RedisConnectionFactory jedisConnectionFactory) {
+    final BatchStrategy batchStrategies = BatchStrategies.scan(5);
+    final RedisCacheWriter redisCacheWriter = RedisCacheWriter.lockingRedisCacheWriter(
+      jedisConnectionFactory,
+      batchStrategies
+    );
+
+    final RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+      .computePrefixWith(cacheName -> "springdata.redis.jedis." + cacheName + ".")
+      .entryTtl(new CacheTimeToLiveFunction())
+      .enableTimeToIdle()
+      .disableCachingNullValues();
+
+    return RedisCacheManager.builder(redisCacheWriter)
+      .cacheDefaults(config)
+      .transactionAware()
+      .enableStatistics()
+      .build();
   }
 }
