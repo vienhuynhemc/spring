@@ -7,14 +7,14 @@
       <option name="url" value="https://repo.ubitec.io/artifactory/dev" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="maven_central" />
-      <option name="name" value="repo" />
-      <option name="url" value="http://central.maven.org/maven2/" />
-    </remote-repository>
-    <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Central Repository" />
       <option name="url" value="https://repo.maven.apache.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven_central" />
+      <option name="name" value="repo" />
+      <option name="url" value="http://central.maven.org/maven2/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="repo.ubitec.io.releases" />
