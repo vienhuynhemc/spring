@@ -2,3 +2,8 @@
 spring:
   application:
     name: "single-datasource"
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/vienhuynhemc"
+    username: "vien.huynh"
+    password: "123456"
+    driver-class-name: "org.postgresql.Driver"
