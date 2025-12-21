@@ -6,7 +6,10 @@ import com.vienhuynhemc.retry_logic.model.ProcessStatus;
 import java.sql.Types;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.job.Job;
@@ -27,6 +30,7 @@ import org.springframework.batch.infrastructure.item.database.builder.JdbcPaging
 import org.springframework.batch.infrastructure.item.database.support.SqlPagingQueryProviderFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.retry.RetryPolicy;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -87,6 +91,11 @@ public class EmailOutboxBatchJobConfig {
     return item -> {
       Thread.sleep(1000);
 
+      final int number = new Random().nextInt(3);
+      if (number == 0 || number == 1) {
+        throw new TimeoutException();
+      }
+
       log.info("Processing email outbox {}", item.getId());
       item.setStatus(ProcessStatus.SUCCESS);
 
@@ -127,12 +136,21 @@ public class EmailOutboxBatchJobConfig {
   }
 
   @Bean
+  public RetryPolicy retryPolicy() {
+    final int retryLimit = 3;
+    final Set<Class<? extends Throwable>> retryableExceptions = Set.of(TimeoutException.class);
+
+    return RetryPolicy.builder().maxRetries(retryLimit).includes(retryableExceptions).build();
+  }
+
+  @Bean
   public Step step(
     JobRepository jobRepository,
     ItemReader<EmailOutbox> reader,
     ItemProcessor<EmailOutbox, EmailOutbox> processor,
     ItemWriter<EmailOutbox> writer,
-    PlatformTransactionManager transactionManager
+    PlatformTransactionManager transactionManager,
+    RetryPolicy retryPolicy
   ) {
     return new StepBuilder(jobRepository)
       .<EmailOutbox, EmailOutbox>chunk(CHUNK_SIZE)
@@ -140,6 +158,8 @@ public class EmailOutboxBatchJobConfig {
       .reader(reader)
       .processor(processor)
       .writer(writer)
+      .faultTolerant()
+      .retryPolicy(retryPolicy)
       .build();
   }
 
