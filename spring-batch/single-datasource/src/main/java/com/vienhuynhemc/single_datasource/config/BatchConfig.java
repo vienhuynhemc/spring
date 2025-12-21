@@ -1,5 +1,5 @@
 /* vienhuynhemc */
-package com.vienhuynhemc.single_datasource;
+package com.vienhuynhemc.single_datasource.config;
 
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.EnableJdbcJobRepository;

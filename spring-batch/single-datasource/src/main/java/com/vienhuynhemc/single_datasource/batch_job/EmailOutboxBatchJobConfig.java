@@ -1,11 +1,14 @@
 /* vienhuynhemc */
-package com.vienhuynhemc.single_datasource;
+package com.vienhuynhemc.single_datasource.batch_job;
 
 import java.sql.Types;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import javax.sql.DataSource;
+
+import com.vienhuynhemc.single_datasource.entity.EmailOutbox;
+import com.vienhuynhemc.single_datasource.model.ProcessStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -31,7 +34,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 @Slf4j
 @Configuration
-public class EmailBatchJobConfig {
+public class EmailOutboxBatchJobConfig {
 
   private static final int CHUNK_SIZE = 2;
 

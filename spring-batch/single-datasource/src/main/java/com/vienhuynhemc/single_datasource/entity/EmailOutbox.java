@@ -1,6 +1,7 @@
 /* vienhuynhemc */
-package com.vienhuynhemc.single_datasource;
+package com.vienhuynhemc.single_datasource.entity;
 
+import com.vienhuynhemc.single_datasource.model.ProcessStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
