@@ -29,7 +29,7 @@ public class PrepareEmailOutboxBatchStepConfig {
         .get("scheduledDate");
 
       final List<EmailOutbox> emailOutboxes = new ArrayList<>();
-      for (int i = 0; i < 100; i++) {
+      for (int i = 0; i < 1000; i++) {
         final EmailOutbox emailOutbox = new EmailOutbox();
         emailOutbox.setId(UUID.randomUUID());
         emailOutbox.setStatus(ProcessStatus.NEW);

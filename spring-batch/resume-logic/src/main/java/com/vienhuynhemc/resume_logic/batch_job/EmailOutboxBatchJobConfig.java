@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
@@ -91,12 +92,19 @@ public class EmailOutboxBatchJobConfig {
       .parameterValues(params)
       .rowMapper(emailOutboxRowMapper)
       .pageSize(CHUNK_SIZE * 10)
+      .saveState(false)
       .build();
   }
 
   @Bean
   public ItemProcessor<EmailOutbox, EmailOutbox> processor() {
     return item -> {
+      final Random random = new Random();
+      int number = random.nextInt(200);
+      if (number == 0) {
+        throw new RuntimeException();
+      }
+
       item.setStatus(ProcessStatus.SUCCESS);
       return item;
     };

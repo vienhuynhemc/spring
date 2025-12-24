@@ -1,9 +1,7 @@
 /* vienhuynhemc */
 package com.vienhuynhemc.resume_logic.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.parameters.InvalidJobParametersException;
@@ -25,11 +23,7 @@ public class DefaultBatchJobService implements BatchJobService {
   @Override
   public void triggerEmailBatchJob() {
     try {
-      final LocalTime now = LocalTime.now();
-      final LocalDateTime param = LocalDateTime.of(
-        LocalDate.now(),
-        LocalTime.of(now.getHour(), now.getMinute(), now.getSecond())
-      );
+      final LocalDateTime param = LocalDateTime.of(2025, 10, 10, 10, 10, 10);
 
       final JobParameters jobParameters = new JobParametersBuilder()
         .addLocalDateTime("scheduledDate", param)
