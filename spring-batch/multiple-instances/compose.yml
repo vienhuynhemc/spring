@@ -1,0 +1,16 @@
+---
+name: "spring-batch"
+services:
+  backend:
+    image: "multiple-instances:0.1.0"
+    scale: 5
+    depends_on:
+      - "db"
+  db:
+    image: "postgres:13.22"
+    environment:
+      POSTGRES_DB: "vienhuynhemc"
+      POSTGRES_USER: "vien.huynh"
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - "5432:5432"
