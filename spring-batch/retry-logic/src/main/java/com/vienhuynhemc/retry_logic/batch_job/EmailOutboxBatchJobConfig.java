@@ -1,8 +1,8 @@
 /* vienhuynhemc */
-package com.vienhuynhemc.idempotent_batch.batch_job;
+package com.vienhuynhemc.retry_logic.batch_job;
 
-import com.vienhuynhemc.idempotent_batch.entity.EmailOutbox;
-import com.vienhuynhemc.idempotent_batch.model.ProcessStatus;
+import com.vienhuynhemc.retry_logic.entity.EmailOutbox;
+import com.vienhuynhemc.retry_logic.model.ProcessStatus;
 import java.sql.Types;
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -1,5 +1,5 @@
 /* vienhuynhemc */
-package com.vienhuynhemc.idempotent_batch.model;
+package com.vienhuynhemc.retry_logic.model;
 
 public enum ProcessStatus {
   NEW,

@@ -1,7 +1,7 @@
 /* vienhuynhemc */
-package com.vienhuynhemc.idempotent_batch.cron_job;
+package com.vienhuynhemc.retry_logic.cron_job;
 
-import com.vienhuynhemc.idempotent_batch.service.EmailOutboxService;
+import com.vienhuynhemc.retry_logic.service.EmailOutboxService;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

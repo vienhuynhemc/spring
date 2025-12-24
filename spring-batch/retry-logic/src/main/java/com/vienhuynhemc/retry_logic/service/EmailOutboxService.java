@@ -1,5 +1,5 @@
 /* vienhuynhemc */
-package com.vienhuynhemc.idempotent_batch.service;
+package com.vienhuynhemc.retry_logic.service;
 
 public interface EmailOutboxService {
   void triggerEmailBatchJob();

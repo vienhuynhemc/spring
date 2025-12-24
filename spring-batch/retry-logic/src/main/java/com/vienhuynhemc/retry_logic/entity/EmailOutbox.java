@@ -1,7 +1,7 @@
 /* vienhuynhemc */
-package com.vienhuynhemc.idempotent_batch.entity;
+package com.vienhuynhemc.retry_logic.entity;
 
-import com.vienhuynhemc.idempotent_batch.model.ProcessStatus;
+import com.vienhuynhemc.retry_logic.model.ProcessStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
