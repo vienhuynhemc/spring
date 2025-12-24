@@ -1,5 +1,5 @@
 /* vienhuynhemc */
-package com.vienhuynhemc.idempotent_batch.config;
+package com.vienhuynhemc.single_datasource.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

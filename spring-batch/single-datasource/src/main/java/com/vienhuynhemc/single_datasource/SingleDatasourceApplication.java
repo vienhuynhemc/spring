@@ -1,5 +1,5 @@
 /* vienhuynhemc */
-package com.vienhuynhemc.idempotent_batch;
+package com.vienhuynhemc.single_datasource;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

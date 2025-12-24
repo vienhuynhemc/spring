@@ -1,5 +1,5 @@
 /* vienhuynhemc */
-package com.vienhuynhemc.idempotent_batch.model;
+package com.vienhuynhemc.single_datasource.model;
 
 public enum ProcessStatus {
   NEW,

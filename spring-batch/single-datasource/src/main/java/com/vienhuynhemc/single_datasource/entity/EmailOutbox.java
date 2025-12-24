@@ -1,7 +1,7 @@
 /* vienhuynhemc */
-package com.vienhuynhemc.idempotent_batch.entity;
+package com.vienhuynhemc.single_datasource.entity;
 
-import com.vienhuynhemc.idempotent_batch.model.ProcessStatus;
+import com.vienhuynhemc.single_datasource.model.ProcessStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
