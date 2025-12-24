@@ -1,7 +1,7 @@
 /* vienhuynhemc */
 package com.vienhuynhemc.idempotent_batch.cron_job;
 
-import com.vienhuynhemc.idempotent_batch.service.EmailOutboxService;
+import com.vienhuynhemc.idempotent_batch.service.BatchJobService;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,12 +13,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class EmailOutboxCronJob {
 
-  private final EmailOutboxService emailOutboxService;
+  private final BatchJobService batchJobService;
 
   @Scheduled(fixedRate = 10, initialDelay = 10, timeUnit = TimeUnit.SECONDS)
   public void emailOutboxCronJob() {
     log.info("Starting Email Outbox Cron Job");
-    emailOutboxService.triggerEmailBatchJob();
+    batchJobService.triggerEmailBatchJob();
     log.info("Finished Email Outbox Cron Job");
   }
 }

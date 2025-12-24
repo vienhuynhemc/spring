@@ -1,34 +1,19 @@
 /* vienhuynhemc */
 package com.vienhuynhemc.idempotent_batch.service;
 
+import com.vienhuynhemc.idempotent_batch.entity.EmailOutbox;
+import com.vienhuynhemc.idempotent_batch.repository.EmailOutboxRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.batch.core.job.Job;
-import org.springframework.batch.core.job.parameters.InvalidJobParametersException;
-import org.springframework.batch.core.job.parameters.JobParameters;
-import org.springframework.batch.core.launch.JobExecutionAlreadyRunningException;
-import org.springframework.batch.core.launch.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.launch.JobOperator;
-import org.springframework.batch.core.launch.JobRestartException;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class DefaultEmailOutboxService implements EmailOutboxService {
 
-  private final JobOperator jobOperator;
-  private final Job job;
+  private final EmailOutboxRepository emailOutboxRepository;
 
   @Override
-  public void triggerEmailBatchJob() {
-    try {
-      jobOperator.start(job, new JobParameters());
-    } catch (
-      JobInstanceAlreadyCompleteException
-      | JobExecutionAlreadyRunningException
-      | InvalidJobParametersException
-      | JobRestartException e
-    ) {
-      throw new RuntimeException(e);
-    }
+  public void saveAll(Iterable<EmailOutbox> emailOutboxes) {
+    emailOutboxRepository.saveAll(emailOutboxes);
   }
 }

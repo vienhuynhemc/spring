@@ -4,17 +4,18 @@ package com.vienhuynhemc.idempotent_batch.batch_job;
 import com.vienhuynhemc.idempotent_batch.entity.EmailOutbox;
 import com.vienhuynhemc.idempotent_batch.model.ProcessStatus;
 import java.sql.Types;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.job.parameters.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -28,6 +29,7 @@ import org.springframework.batch.infrastructure.item.database.PagingQueryProvide
 import org.springframework.batch.infrastructure.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.infrastructure.item.database.builder.JdbcPagingItemReaderBuilder;
 import org.springframework.batch.infrastructure.item.database.support.SqlPagingQueryProviderFactoryBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.retry.RetryPolicy;
@@ -49,7 +51,7 @@ public class EmailOutboxBatchJobConfig {
 
     provider.setSelectClause("SELECT id, status, created_at");
     provider.setFromClause("FROM email_outbox");
-    provider.setWhereClause("WHERE status = 'NEW'");
+    provider.setWhereClause("WHERE status = 'NEW' AND scheduled_date = :scheduledDate");
 
     final Map<String, Order> sortKeys = new LinkedHashMap<>();
     sortKeys.put("created_at", Order.ASCENDING);
@@ -72,15 +74,21 @@ public class EmailOutboxBatchJobConfig {
   }
 
   @Bean
+  @StepScope
   public JdbcPagingItemReader<EmailOutbox> reader(
     DataSource dataSource,
     PagingQueryProvider queryProvider,
-    RowMapper<EmailOutbox> emailOutboxRowMapper
+    RowMapper<EmailOutbox> emailOutboxRowMapper,
+    @Value("#{jobParameters['scheduledDate']}") LocalDateTime scheduledDate
   ) throws Exception {
+    final Map<String, Object> params = new HashMap<>();
+    params.put("scheduledDate", scheduledDate);
+
     return new JdbcPagingItemReaderBuilder<EmailOutbox>()
       .name("emailOutboxReader")
       .dataSource(dataSource)
       .queryProvider(queryProvider)
+      .parameterValues(params)
       .rowMapper(emailOutboxRowMapper)
       .pageSize(CHUNK_SIZE * 10)
       .build();
@@ -89,30 +97,17 @@ public class EmailOutboxBatchJobConfig {
   @Bean
   public ItemProcessor<EmailOutbox, EmailOutbox> processor() {
     return item -> {
-      Thread.sleep(1000);
-
-      final int number = new Random().nextInt(3);
-      if (number == 0 || number == 1) {
-        throw new TimeoutException();
-      }
-
-      log.info("Processing email outbox {}", item.getId());
       item.setStatus(ProcessStatus.SUCCESS);
-
       return item;
     };
   }
 
   @Bean
   public ItemSqlParameterSourceProvider<EmailOutbox> itemSqlParameterSourceProvider() {
-    return item -> {
-      final MapSqlParameterSource params = new MapSqlParameterSource();
-
-      params.addValue("id", item.getId());
-      params.addValue("status", item.getStatus().name(), Types.VARCHAR);
-
-      return params;
-    };
+    return item ->
+      new MapSqlParameterSource()
+        .addValue("id", item.getId())
+        .addValue("status", item.getStatus().name(), Types.VARCHAR);
   }
 
   @Bean
@@ -164,7 +159,7 @@ public class EmailOutboxBatchJobConfig {
   }
 
   @Bean
-  public Job job(JobRepository jobRepository, Step step) {
-    return new JobBuilder("emailOutbox", jobRepository).start(step).incrementer(new RunIdIncrementer()).build();
+  public Job job(JobRepository jobRepository, Step step, Step prepareEmailOutboxStep) {
+    return new JobBuilder("emailOutbox", jobRepository).start(prepareEmailOutboxStep).next(step).build();
   }
 }

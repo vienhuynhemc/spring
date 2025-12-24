@@ -8,7 +8,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,20 +28,13 @@ public class EmailOutbox {
   @Column(name = "status", nullable = false, length = 20)
   private ProcessStatus status;
 
-  @ColumnDefault("0")
-  @Column(name = "retry_count", nullable = false)
-  private Integer retryCount;
-
-  @Column(name = "last_error", length = Integer.MAX_VALUE)
-  private String lastError;
-
-  @Column(name = "next_retry_at")
-  private Instant nextRetryAt;
+  @Column(name = "scheduled_date", nullable = false)
+  private LocalDateTime scheduledDate;
 
   @ColumnDefault("CURRENT_TIMESTAMP")
   @Column(name = "created_at", nullable = false)
-  private Instant createdAt;
+  private LocalDateTime createdAt;
 
   @Column(name = "updated_at")
-  private Instant updatedAt;
+  private LocalDateTime updatedAt;
 }
