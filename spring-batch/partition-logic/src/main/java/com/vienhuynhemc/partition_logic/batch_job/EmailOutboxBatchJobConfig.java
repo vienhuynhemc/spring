@@ -99,12 +99,6 @@ public class EmailOutboxBatchJobConfig {
   @Bean
   public ItemProcessor<EmailOutbox, EmailOutbox> processor() {
     return item -> {
-      final Random random = new Random();
-      int number = random.nextInt(200);
-      if (number == 0) {
-        throw new RuntimeException();
-      }
-
       item.setStatus(ProcessStatus.SUCCESS);
       return item;
     };
