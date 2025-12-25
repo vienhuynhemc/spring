@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
@@ -17,9 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.partition.PartitionHandler;
+import org.springframework.batch.core.partition.Partitioner;
+import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
 import org.springframework.batch.infrastructure.item.ItemProcessor;
 import org.springframework.batch.infrastructure.item.ItemReader;
 import org.springframework.batch.infrastructure.item.ItemWriter;
@@ -36,6 +39,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.retry.RetryPolicy;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Slf4j
@@ -52,7 +56,7 @@ public class EmailOutboxBatchJobConfig {
 
     provider.setSelectClause("SELECT id, status, created_at");
     provider.setFromClause("FROM email_outbox");
-    provider.setWhereClause("WHERE status = 'NEW' AND scheduled_date = :scheduledDate");
+    provider.setWhereClause("WHERE status = 'NEW' AND scheduled_date = :scheduledDate AND merchant_id = :merchantId");
 
     final Map<String, Order> sortKeys = new LinkedHashMap<>();
     sortKeys.put("created_at", Order.ASCENDING);
@@ -80,10 +84,12 @@ public class EmailOutboxBatchJobConfig {
     DataSource dataSource,
     PagingQueryProvider queryProvider,
     RowMapper<EmailOutbox> emailOutboxRowMapper,
-    @Value("#{jobParameters['scheduledDate']}") LocalDateTime scheduledDate
+    @Value("#{jobParameters['scheduledDate']}") LocalDateTime scheduledDate,
+    @Value("#{stepExecutionContext['merchantId']}") Integer merchantId
   ) throws Exception {
     final Map<String, Object> params = new HashMap<>();
     params.put("scheduledDate", scheduledDate);
+    params.put("merchantId", merchantId);
 
     return new JdbcPagingItemReaderBuilder<EmailOutbox>()
       .name("emailOutboxReader")
@@ -161,7 +167,49 @@ public class EmailOutboxBatchJobConfig {
   }
 
   @Bean
-  public Job job(JobRepository jobRepository, Step step, Step prepareEmailOutboxStep) {
-    return new JobBuilder("emailOutbox", jobRepository).start(prepareEmailOutboxStep).next(step).build();
+  public Partitioner emailOutboxPartitioner() {
+    return gridSize -> {
+      final Map<String, ExecutionContext> partitionContexts = new LinkedHashMap<>();
+
+      for (int i = 0; i < gridSize; i++) {
+        final ExecutionContext context = new ExecutionContext();
+        context.putInt("merchantId", i);
+
+        partitionContexts.put("partition" + i, context);
+      }
+
+      return partitionContexts;
+    };
+  }
+
+  @Bean
+  public PartitionHandler emailOutboxPartitionHandler(ThreadPoolTaskExecutor partitionTaskExecutor, Step step) {
+    final TaskExecutorPartitionHandler partitionHandler = new TaskExecutorPartitionHandler();
+
+    partitionHandler.setTaskExecutor(partitionTaskExecutor);
+    partitionHandler.setStep(step);
+    partitionHandler.setGridSize(4);
+
+    return partitionHandler;
+  }
+
+  @Bean
+  public Step emailOutboxManagerStep(
+    JobRepository jobRepository,
+    Partitioner emailOutboxPartitioner,
+    PartitionHandler emailOutboxPartitionHandler
+  ) {
+    return new StepBuilder("emailOutbox.manager", jobRepository)
+      .partitioner("emailOutbox.worker", emailOutboxPartitioner)
+      .partitionHandler(emailOutboxPartitionHandler)
+      .build();
+  }
+
+  @Bean
+  public Job job(JobRepository jobRepository, Step emailOutboxManagerStep, Step prepareEmailOutboxStep) {
+    return new JobBuilder("emailOutbox", jobRepository)
+      .start(prepareEmailOutboxStep)
+      .next(emailOutboxManagerStep)
+      .build();
   }
 }

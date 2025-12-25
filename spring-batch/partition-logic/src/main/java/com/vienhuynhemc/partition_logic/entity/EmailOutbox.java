@@ -37,4 +37,7 @@ public class EmailOutbox {
 
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
+
+  @Column(name = "merchant_id", nullable = false)
+  private Integer merchantId;
 }

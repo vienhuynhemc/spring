@@ -29,13 +29,23 @@ public class PrepareEmailOutboxBatchStepConfig {
         .get("scheduledDate");
 
       final List<EmailOutbox> emailOutboxes = new ArrayList<>();
+
+      int count = 0;
+      int merchantId = 0;
       for (int i = 0; i < 10000; i++) {
         final EmailOutbox emailOutbox = new EmailOutbox();
         emailOutbox.setId(UUID.randomUUID());
         emailOutbox.setStatus(ProcessStatus.NEW);
         emailOutbox.setCreatedAt(LocalDateTime.now());
         emailOutbox.setScheduledDate(scheduledDate);
+        emailOutbox.setMerchantId(merchantId);
         emailOutboxes.add(emailOutbox);
+
+        count++;
+        if (count == 2500) {
+          count = 0;
+          merchantId++;
+        }
       }
       emailOutboxService.saveAll(emailOutboxes);
 
