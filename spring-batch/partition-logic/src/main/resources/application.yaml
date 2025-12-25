@@ -1,0 +1,12 @@
+---
+spring:
+  application:
+    name: "partition-logic"
+  datasource:
+    url: "jdbc:postgresql://db:5432/vienhuynhemc"
+    username: "vien.huynh"
+    password: "123456"
+    driver-class-name: "org.postgresql.Driver"
+  batch:
+    job:
+      enabled: false
