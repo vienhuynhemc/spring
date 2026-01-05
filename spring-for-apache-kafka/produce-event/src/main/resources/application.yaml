@@ -1,0 +1,6 @@
+---
+spring:
+  application:
+    name: "produce-event"
+  kafka:
+    bootstrap-servers: "localhost:9092"

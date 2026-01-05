@@ -9,10 +9,10 @@
     <!-- lookup parent from repository -->
   </parent>
   <groupId>com.vienhuynhemc</groupId>
-  <artifactId>session-timeout</artifactId>
+  <artifactId>produce-event</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>session-timeout</name>
-  <description>Session timeout - Learning project</description>
+  <name>produce-event</name>
+  <description>Produce event - Learning project</description>
   <url/>
   <licenses>
     <license/>
