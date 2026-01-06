@@ -29,7 +29,7 @@ public class OrderStatusUpdateCronJob {
         "order.status.v1",
         null,
         Instant.now().toEpochMilli(),
-        event.orderId(),
+        event.orderId().toString(),
         event
       );
       kafkaTemplate.send(record);
@@ -40,25 +40,24 @@ public class OrderStatusUpdateCronJob {
     final List<OrderStatusUpdatedEvent> events = new ArrayList<>();
     final UUID orderId = UUID.randomUUID();
 
-    final OrderStatusUpdatedEvent firstEvent = new OrderStatusUpdatedEvent(
-      UUID.randomUUID().toString(),
-      orderId.toString(),
-      OrderStatus.DRAFT.name(),
-      OrderStatus.PENDING.name(),
-      Instant.now()
+    events.add(
+      new OrderStatusUpdatedEvent(UUID.randomUUID(), orderId, OrderStatus.DRAFT, OrderStatus.PENDING, Instant.now())
     );
-    events.add(firstEvent);
+
+    boolean isHaveSubmitted = random.nextBoolean();
+    if (isHaveSubmitted) {
+      final UUID eventId = UUID.randomUUID();
+      events.add(
+        new OrderStatusUpdatedEvent(eventId, orderId, OrderStatus.PENDING, OrderStatus.SUBMITTED, Instant.now())
+      );
+    }
 
     boolean isHaveComplete = random.nextBoolean();
     if (isHaveComplete) {
-      final OrderStatusUpdatedEvent secondEvent = new OrderStatusUpdatedEvent(
-        UUID.randomUUID().toString(),
-        orderId.toString(),
-        OrderStatus.PENDING.name(),
-        OrderStatus.COMPLETED.name(),
-        Instant.now()
+      final UUID eventId = UUID.randomUUID();
+      events.add(
+        new OrderStatusUpdatedEvent(eventId, orderId, OrderStatus.SUBMITTED, OrderStatus.COMPLETED, Instant.now())
       );
-      events.add(secondEvent);
     }
 
     return events;
