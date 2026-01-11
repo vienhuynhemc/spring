@@ -21,7 +21,7 @@ public class OrderStatusUpdateCronJob {
   private final Random random = new Random();
 
   @Scheduled(fixedRate = 1, initialDelay = 1, timeUnit = TimeUnit.SECONDS)
-  public void orderStatusUpdateCronCronJob() {
+  public void orderStatusUpdateCronJob() {
     final List<OrderStatusUpdatedEvent> events = generateOrderStatusUpdatedEvents();
 
     for (OrderStatusUpdatedEvent event : events) {

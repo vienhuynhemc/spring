@@ -1,6 +1,7 @@
 /* vienhuynhemc */
 package com.vienhuynhemc.outbox_pattern.entity;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.vienhuynhemc.outbox_pattern.model.OutboxEventStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,14 +11,22 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "outbox_event", schema = "public")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OutboxEvent {
 
   @Id
@@ -30,8 +39,9 @@ public class OutboxEvent {
   @Column(name = "aggregate_id", nullable = false, length = 200)
   private String aggregateId;
 
+  @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "payload", nullable = false)
-  private String payload;
+  private JsonNode payload;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "status", nullable = false, length = 20)
