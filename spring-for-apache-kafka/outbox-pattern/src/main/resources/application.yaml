@@ -15,6 +15,8 @@ spring:
         enable.idempotence: true
         max.in.flight.requests.per.connection: 5
         linger.ms: 5
+        request.timeout.ms: 5000
+        delivery.timeout.ms: 60000
   datasource:
     url: "jdbc:postgresql://localhost:5432/vienhuynhemc"
     username: "vien.huynh"
