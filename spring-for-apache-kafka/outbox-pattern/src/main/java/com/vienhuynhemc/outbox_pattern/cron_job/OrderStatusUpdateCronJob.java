@@ -1,6 +1,8 @@
 /* vienhuynhemc */
-package com.vienhuynhemc.outbox_pattern;
+package com.vienhuynhemc.outbox_pattern.cron_job;
 
+import com.vienhuynhemc.outbox_pattern.model.OrderStatus;
+import com.vienhuynhemc.outbox_pattern.model.OrderStatusUpdatedEvent;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,5 +1,5 @@
 /* vienhuynhemc */
-package com.vienhuynhemc.outbox_pattern;
+package com.vienhuynhemc.outbox_pattern.model;
 
 import java.time.Instant;
 import java.util.UUID;

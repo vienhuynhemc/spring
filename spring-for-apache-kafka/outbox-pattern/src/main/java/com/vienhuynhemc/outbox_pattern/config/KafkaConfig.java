@@ -1,5 +1,5 @@
 /* vienhuynhemc */
-package com.vienhuynhemc.outbox_pattern;
+package com.vienhuynhemc.outbox_pattern.config;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
