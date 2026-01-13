@@ -2,6 +2,7 @@
 package com.vienhuynhemc.outbox_pattern.service;
 
 import com.vienhuynhemc.outbox_pattern.entity.OutboxEvent;
+import com.vienhuynhemc.outbox_pattern.model.OutboxEventStatus;
 import com.vienhuynhemc.outbox_pattern.repository.OutboxEventRepository;
 import jakarta.annotation.Nonnull;
 import java.time.Instant;
@@ -24,5 +25,19 @@ public class DefaultOutboxEventService implements OutboxEventService {
   @Override
   public @Nonnull List<OutboxEvent> getValidPendingOutboxEvents(@Nonnull String eventType, @Nonnull Instant timeQuery) {
     return outboxEventRepository.getValidPendingOutboxEvents(eventType, timeQuery);
+  }
+
+  @Override
+  public void markSent(@Nonnull OutboxEvent event) {
+    event.setStatus(OutboxEventStatus.SENT);
+    event.setSendAt(Instant.now());
+  }
+
+  @Override
+  public void markFailed(@Nonnull OutboxEvent event, @Nonnull Throwable throwable) {
+    event.setStatus(OutboxEventStatus.FAILED);
+    event.setRetryCount(event.getRetryCount() + 1);
+    event.setNextRetryAt(Instant.now());
+    event.setErrorMessage(throwable.getMessage());
   }
 }

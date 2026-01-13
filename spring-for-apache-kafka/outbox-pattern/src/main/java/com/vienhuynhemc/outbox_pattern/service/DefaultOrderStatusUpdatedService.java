@@ -1,6 +1,7 @@
 /* vienhuynhemc */
 package com.vienhuynhemc.outbox_pattern.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vienhuynhemc.outbox_pattern.entity.OutboxEvent;
 import com.vienhuynhemc.outbox_pattern.model.OrderStatus;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,6 +34,24 @@ public class DefaultOrderStatusUpdatedService implements OrderStatusUpdatedServi
     if (random.nextBoolean()) {
       throw new RuntimeException("Some error occurred while processing order");
     }
+  }
+
+  @Override
+  public @Nonnull ProducerRecord<String, OrderStatusUpdatedEvent> createRecord(@Nonnull OutboxEvent event) {
+    final OrderStatusUpdatedEvent payload;
+    try {
+      payload = objectMapper.treeToValue(event.getPayload(), OrderStatusUpdatedEvent.class);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+
+    return new ProducerRecord<>(
+      event.getEventType(),
+      null,
+      Instant.now().toEpochMilli(),
+      event.getAggregateId(),
+      payload
+    );
   }
 
   private void generateAndSaveOutboxEvents() {

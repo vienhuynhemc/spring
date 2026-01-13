@@ -1,10 +1,9 @@
 /* vienhuynhemc */
 package com.vienhuynhemc.outbox_pattern.cron_job;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vienhuynhemc.outbox_pattern.entity.OutboxEvent;
 import com.vienhuynhemc.outbox_pattern.model.OrderStatusUpdatedEvent;
+import com.vienhuynhemc.outbox_pattern.service.OrderStatusUpdatedService;
 import com.vienhuynhemc.outbox_pattern.service.OutboxEventService;
 import java.time.Instant;
 import java.util.List;
@@ -21,29 +20,28 @@ public class OutboxEventCronJob {
 
   private final KafkaTemplate<String, OrderStatusUpdatedEvent> kafkaTemplate;
   private final OutboxEventService outboxEventService;
-  private final ObjectMapper objectMapper;
+  private final OrderStatusUpdatedService orderStatusUpdatedService;
 
   @Scheduled(fixedRate = 1, initialDelay = 1, timeUnit = TimeUnit.SECONDS)
-  public void outboxEventCronJobCronJob() throws JsonProcessingException {
+  public void outboxEventCronJobCronJob() {
     final List<OutboxEvent> outboxEvents = outboxEventService.getValidPendingOutboxEvents(
       "order.status.v1",
       Instant.now()
     );
 
     for (OutboxEvent event : outboxEvents) {
-      final OrderStatusUpdatedEvent payload = objectMapper.treeToValue(
-        event.getPayload(),
-        OrderStatusUpdatedEvent.class
-      );
-      final ProducerRecord<String, OrderStatusUpdatedEvent> record = new ProducerRecord<>(
-        event.getEventType(),
-        null,
-        Instant.now().toEpochMilli(),
-        event.getAggregateId(),
-        payload
-      );
-
-      kafkaTemplate.send(record);
+      final ProducerRecord<String, OrderStatusUpdatedEvent> record = orderStatusUpdatedService.createRecord(event);
+      kafkaTemplate
+        .send(record)
+        .whenComplete((_, exception) -> {
+          if (exception == null) {
+            outboxEventService.markSent(event);
+          } else {
+            outboxEventService.markFailed(event, exception);
+          }
+        });
     }
+
+    outboxEventService.saveOutboxEvents(outboxEvents);
   }
 }

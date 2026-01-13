@@ -13,7 +13,7 @@ public class OrderStatusUpdateCronJob {
 
   private final OrderStatusUpdatedService orderStatusUpdatedService;
 
-  @Scheduled(fixedRate = 1, initialDelay = 1, timeUnit = TimeUnit.SECONDS)
+  @Scheduled(fixedRate = 5, initialDelay = 5, timeUnit = TimeUnit.SECONDS)
   public void orderStatusUpdateCronJob() {
     orderStatusUpdatedService.processOrder();
   }
