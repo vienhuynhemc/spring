@@ -41,7 +41,5 @@ public class OutboxEventCronJob {
           }
         });
     }
-
-    outboxEventService.saveOutboxEvents(outboxEvents);
   }
 }

@@ -31,6 +31,8 @@ public class DefaultOutboxEventService implements OutboxEventService {
   public void markSent(@Nonnull OutboxEvent event) {
     event.setStatus(OutboxEventStatus.SENT);
     event.setSendAt(Instant.now());
+
+    outboxEventRepository.save(event);
   }
 
   @Override
@@ -39,5 +41,7 @@ public class DefaultOutboxEventService implements OutboxEventService {
     event.setRetryCount(event.getRetryCount() + 1);
     event.setNextRetryAt(Instant.now());
     event.setErrorMessage(throwable.getMessage());
+
+    outboxEventRepository.save(event);
   }
 }
