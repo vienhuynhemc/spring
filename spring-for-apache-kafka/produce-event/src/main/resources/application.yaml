@@ -11,6 +11,7 @@ spring:
       retries: 5
       batch-size: 32768
       compression-type: "snappy"
+      client-id: "order-service-producer"
       properties:
         enable.idempotence: true
         max.in.flight.requests.per.connection: 5
