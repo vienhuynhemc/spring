@@ -29,11 +29,11 @@ public class DefaultOrderStatusUpdatedService implements OrderStatusUpdatedServi
   @Override
   @Transactional
   public void processOrder() {
-    generateAndSaveOutboxEvents();
-
     if (random.nextBoolean()) {
-      throw new RuntimeException("Some error occurred while processing order");
+      return;
     }
+
+    generateAndSaveOutboxEvents();
   }
 
   @Override

@@ -13,6 +13,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 @Configuration
 public class KafkaConfig {
@@ -27,15 +28,15 @@ public class KafkaConfig {
     String,
     OrderStatusUpdatedEvent
   > orderStatusUpdatedKafkaListenerContainerFactory(@Nonnull KafkaProperties kafkaProperties) {
-    final Map<String, Object> defaultConsumerProps = kafkaProperties.buildConsumerProperties();
-    final Map<String, Object> copiedProps = new HashMap<>(defaultConsumerProps);
-
-    final ConsumerFactory<String, OrderStatusUpdatedEvent> consumerFactory = new DefaultKafkaConsumerFactory<>(
-      copiedProps
-    );
-
     final ConcurrentKafkaListenerContainerFactory<String, OrderStatusUpdatedEvent> factory =
       new ConcurrentKafkaListenerContainerFactory<>();
+
+    final Map<String, Object> defaultProps = kafkaProperties.buildConsumerProperties();
+    final Map<String, Object> props = new HashMap<>(defaultProps);
+    props.put(JsonDeserializer.TRUSTED_PACKAGES, "com.vienhuynhemc.consume_event.model");
+
+    final ConsumerFactory<String, OrderStatusUpdatedEvent> consumerFactory = new DefaultKafkaConsumerFactory<>(props);
+
     factory.setConsumerFactory(consumerFactory);
 
     return factory;

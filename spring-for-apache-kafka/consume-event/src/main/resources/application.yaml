@@ -20,6 +20,8 @@ spring:
         delivery.timeout.ms: 60000
     consumer:
       group-id: "consume-event"
+      key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
+      value-deserializer: "org.springframework.kafka.support.serializer.JsonDeserializer"
   datasource:
     url: "jdbc:postgresql://localhost:5432/vienhuynhemc"
     username: "vien.huynh"
