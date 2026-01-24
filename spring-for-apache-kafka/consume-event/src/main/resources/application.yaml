@@ -22,7 +22,9 @@ spring:
       group-id: "consume-event"
       key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
       value-deserializer: "org.springframework.kafka.support.serializer.JsonDeserializer"
-      enable-auto-commit: false
+      heartbeat-interval: 10000
+      properties:
+        session.timeout.ms: 30000
   datasource:
     url: "jdbc:postgresql://localhost:5432/vienhuynhemc"
     username: "vien.huynh"
