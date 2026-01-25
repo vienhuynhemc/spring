@@ -23,6 +23,8 @@ spring:
       key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
       value-deserializer: "org.springframework.kafka.support.serializer.JsonDeserializer"
       heartbeat-interval: 10000
+      max-poll-interval: 60000
+      max-poll-records: 20
       properties:
         session.timeout.ms: 30000
   datasource:
