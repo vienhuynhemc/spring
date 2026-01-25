@@ -38,6 +38,7 @@ public class KafkaConfig {
     final ConsumerFactory<String, OrderStatusUpdatedEvent> consumerFactory = new DefaultKafkaConsumerFactory<>(props);
 
     factory.setConsumerFactory(consumerFactory);
+    factory.setConcurrency(5);
 
     return factory;
   }
