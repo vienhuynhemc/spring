@@ -23,7 +23,7 @@ public class OutboxEventCronJob {
   private final OrderStatusUpdatedService orderStatusUpdatedService;
 
   @Scheduled(fixedRate = 1, initialDelay = 1, timeUnit = TimeUnit.SECONDS)
-  public void outboxEventCronJobCronJob() {
+  public void outboxEventCronJob() {
     final List<OutboxEvent> outboxEvents = outboxEventService.getValidPendingOutboxEvents(
       "order.status.v1",
       Instant.now()

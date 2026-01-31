@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS outbox_event (
-  id UUID,
+  id UUID NOT NULL,
   event_type VARCHAR(200) NOT NULL,
   aggregate_id VARCHAR(200) NOT NULL,
   payload JSONB NOT NULL,
