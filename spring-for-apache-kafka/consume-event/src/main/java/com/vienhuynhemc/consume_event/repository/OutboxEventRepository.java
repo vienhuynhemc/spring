@@ -17,7 +17,6 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, UUID> 
       AND e.retryCount < 3
       AND e.status != 'SENT'
       AND e.nextRetryAt <= :timeQuery
-    ORDER BY e.createdAt
     """
   )
   @Nonnull

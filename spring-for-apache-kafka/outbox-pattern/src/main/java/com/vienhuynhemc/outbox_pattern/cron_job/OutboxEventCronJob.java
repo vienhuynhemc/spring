@@ -5,6 +5,7 @@ import com.vienhuynhemc.outbox_pattern.entity.OutboxEvent;
 import com.vienhuynhemc.outbox_pattern.model.OrderStatusUpdatedEvent;
 import com.vienhuynhemc.outbox_pattern.service.OrderStatusUpdatedService;
 import com.vienhuynhemc.outbox_pattern.service.OutboxEventService;
+import jakarta.annotation.Nonnull;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -29,17 +30,19 @@ public class OutboxEventCronJob {
       Instant.now()
     );
 
-    for (OutboxEvent event : outboxEvents) {
-      final ProducerRecord<String, OrderStatusUpdatedEvent> record = orderStatusUpdatedService.createRecord(event);
-      kafkaTemplate
-        .send(record)
-        .whenComplete((_, exception) -> {
-          if (exception == null) {
-            outboxEventService.markSent(event);
-          } else {
-            outboxEventService.markFailed(event, exception);
-          }
-        });
-    }
+    outboxEvents.forEach(this::sendEvent);
+  }
+
+  private void sendEvent(@Nonnull OutboxEvent event) {
+    final ProducerRecord<String, OrderStatusUpdatedEvent> record = orderStatusUpdatedService.createRecord(event);
+    kafkaTemplate
+      .send(record)
+      .whenComplete((_, exception) -> {
+        if (exception == null) {
+          outboxEventService.markSent(event);
+        } else {
+          outboxEventService.markFailed(event, exception);
+        }
+      });
   }
 }

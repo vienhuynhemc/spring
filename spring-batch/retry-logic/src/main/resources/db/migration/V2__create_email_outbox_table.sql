@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS email_outbox (
-  id UUID,
+  id UUID NOT NULL,
   status VARCHAR(20) NOT NULL,
   retry_count INT NOT NULL DEFAULT 0,
   last_error TEXT,
