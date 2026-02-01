@@ -54,6 +54,9 @@ public class OutboxEvent {
   @Column(name = "next_retry_at")
   private Instant nextRetryAt;
 
+  @Column(name = "sequence_number")
+  private Integer sequenceNumber;
+
   @Column(name = "error_message", length = Integer.MAX_VALUE)
   private String errorMessage;
 

@@ -13,7 +13,8 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, UUID> 
   @Query(
     value = """
     SELECT e FROM OutboxEvent e
-    WHERE e.eventType = :eventType
+    WHERE e.sequenceNumber IS NULL
+      AND e.eventType = :eventType
       AND e.retryCount < 3
       AND e.status != 'SENT'
       AND e.nextRetryAt <= :timeQuery
