@@ -13,6 +13,9 @@ public interface OutboxEventService {
   @Nonnull
   List<OutboxEvent> getValidPendingOutboxEvents(@Nonnull String eventType, @Nonnull Instant timeQuery);
 
+  @Nonnull
+  List<OutboxEvent> getValidPendingPerKeyOutboxEvents(@Nonnull String eventType, @Nonnull Instant timeQuery);
+
   void markSent(@Nonnull OutboxEvent event);
 
   void markFailed(@Nonnull OutboxEvent event, @Nonnull Throwable exception);

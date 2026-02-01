@@ -33,6 +33,16 @@ public class OutboxEventCronJob {
     outboxEvents.forEach(this::sendEvent);
   }
 
+  @Scheduled(fixedRate = 1, initialDelay = 1, timeUnit = TimeUnit.SECONDS)
+  public void perKeyOutboxEventCronJob() {
+    final List<OutboxEvent> outboxEvents = outboxEventService.getValidPendingPerKeyOutboxEvents(
+      "order.status.v1",
+      Instant.now()
+    );
+
+    outboxEvents.forEach(this::sendEvent);
+  }
+
   private void sendEvent(@Nonnull OutboxEvent event) {
     final ProducerRecord<String, OrderStatusUpdatedEvent> record = orderStatusUpdatedService.createRecord(event);
     kafkaTemplate

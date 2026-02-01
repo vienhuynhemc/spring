@@ -64,6 +64,8 @@ public class DefaultOrderStatusUpdatedService implements OrderStatusUpdatedServi
   }
 
   private @Nonnull OutboxEvent toOutboxEvent(@Nonnull OrderStatusUpdatedEvent event) {
+    final int sequenceNumber = getSequenceNumber(event.newStatus());
+
     return OutboxEvent.builder()
       .id(UUID.randomUUID())
       .eventType("order.status.v1")
@@ -72,6 +74,7 @@ public class DefaultOrderStatusUpdatedService implements OrderStatusUpdatedServi
       .status(OutboxEventStatus.PENDING)
       .retryCount(0)
       .nextRetryAt(Instant.now())
+      .sequenceNumber(sequenceNumber)
       .createdAt(Instant.now())
       .build();
   }
@@ -101,5 +104,14 @@ public class DefaultOrderStatusUpdatedService implements OrderStatusUpdatedServi
     }
 
     return events;
+  }
+
+  private int getSequenceNumber(@Nonnull OrderStatus status) {
+    return switch (status) {
+      case DRAFT -> 0;
+      case PENDING -> 1;
+      case SUBMITTED -> 2;
+      case COMPLETED -> 3;
+    };
   }
 }

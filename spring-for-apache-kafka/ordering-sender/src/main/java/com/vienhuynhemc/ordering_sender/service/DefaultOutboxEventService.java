@@ -28,6 +28,14 @@ public class DefaultOutboxEventService implements OutboxEventService {
   }
 
   @Override
+  public @Nonnull List<OutboxEvent> getValidPendingPerKeyOutboxEvents(
+    @Nonnull String eventType,
+    @Nonnull Instant timeQuery
+  ) {
+    return outboxEventRepository.getValidPendingPerKeyOutboxEvents(eventType, timeQuery);
+  }
+
+  @Override
   public void markSent(@Nonnull OutboxEvent event) {
     event.setStatus(OutboxEventStatus.SENT);
     event.setSendAt(Instant.now());
